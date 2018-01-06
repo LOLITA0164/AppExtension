@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+#import "ViewController.h"
+#import "AddViewController.h"
+#import "DetailViewController.h"
 
 @interface AppDelegate ()
 
@@ -16,10 +19,40 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    [self.window makeKeyWindow];
+    
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[ViewController new]];
+    
+    self.window.rootViewController = nav;
+    
     return YES;
 }
 
+
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    
+    if ([url.absoluteString hasPrefix:@"AppExtension"]) {
+        if ([url.absoluteString hasSuffix:@"add"]) {//判断是否是直接跳入到添加页面
+            AddViewController *addCtrl = [AddViewController new];
+            UINavigationController *rootNav = (UINavigationController*)self.window.rootViewController;
+            [rootNav pushViewController:addCtrl animated:YES];
+            
+        }
+        else if ([url.absoluteString containsString:@"detail"]){
+            NSString *detail_MessageId = [[url.absoluteString componentsSeparatedByString:@"//"] lastObject];
+            NSString *message_id = [[detail_MessageId componentsSeparatedByString:@"="] lastObject];
+            DetailViewController *detailCtrl = [DetailViewController new];
+            detailCtrl.title = message_id;
+            UINavigationController *rootNav = (UINavigationController*)self.window.rootViewController;
+            [rootNav pushViewController:detailCtrl animated:YES];
+        }
+    }
+    return YES;
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
